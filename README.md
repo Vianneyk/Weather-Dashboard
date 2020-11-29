@@ -8,3 +8,4 @@ In this project, I have developed an application that uses HTML and jQuery that 
 
 The link to the webpage
 
+https://vianneyk.github.io/Weather-Dashboard/
