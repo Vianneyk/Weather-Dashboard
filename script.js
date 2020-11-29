@@ -57,4 +57,69 @@ $(document).ready(function () {
             var lon = data.coord.lon;
             var lat = data.coord.lat;
 
+            $.ajax({
+                
+                url: "https://api.openweathermap.org/data/2.5/uvi?appid=7bc814b27d27dfe348e17287919d852f&lat=" + lat + "&lon=" + lon,
+                method: "GET",
+
+            }).then(function (response) {
+                console.log(response);
+
+                var uvResponse = response.value;
+                var uvIndex = $("<p>").addClass("card-text").text("UV Index: ");
+                var btn = $("<span>").addClass("btn btn-sm").text(uvResponse);
+
+
+                if (uvResponse < 3) {
+                    btn.addClass("btn-success");
+                } else if (uvResponse < 7) {
+                    btn.addClass("btn-warning");
+                } else {
+                    btn.addClass("btn-danger");
+                }
+
+                cardBody.append(uvIndex);
+                $("#today .card-body").append(uvIndex.append(btn));
+
+            });
+
+            title.append(img);
+            cardBody.append(title, temp, humid, wind);
+            card.append(cardBody);
+            $("#today").append(card);
+            console.log(data);
+        });
+    }
+
+    function weatherForecast(searchTerm) {
+        $.ajax({
             
+            url: "https://api.openweathermap.org/data/2.5/forecast?q=" + searchTerm + "&appid=7bc814b27d27dfe348e17287919d852f&units=metric",
+            method: "GET",
+
+        }).then(function (data) {
+            console.log(data);
+            $("#forecast").html("<h4 class=\"mt-3\">5-Day Forecast:</h4>").append("<div class=\"row\">");
+
+            for (var i = 0; i < data.list.length; i++) {
+
+                if (data.list[i].dt_txt.indexOf("15:00:00") !== -1) {
+
+                    var titleFive = $("<h3>").addClass("card-title").text(new Date(data.list[i].dt_txt).toLocaleDateString());
+                    var imgFive = $("<img>").attr("src", "https://openweathermap.org/img/w/" + data.list[i].weather[0].icon + ".png");
+                    var cardFive = $("<div>").addClass("card bg-primary text-white");
+                    var cardBodyFive = $("<div>").addClass("card-body p-2");
+                    var colFive = $("<div>").addClass("col-md-2");
+                    var humidFive = $("<p>").addClass("card-text").text("Humidity: " + data.list[i].main.humidity + "%");
+                    var tempFive = $("<p>").addClass("card-text").text("Temperature: " + data.list[i].main.temp + " °C");
+
+                    colFive.append(cardFive.append(cardBodyFive.append(titleFive, imgFive, tempFive, humidFive)));
+                    
+                    $("#forecast .row").append(colFive);
+
+                }
+            }
+        });
+    }
+
+});
